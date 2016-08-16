@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+
+    <title>React</title>
+
+    <meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+    <link rel="stylesheet" href="bower_components/reveal.js/css/reveal.css">
+    <link rel="stylesheet" href="bower_components/reveal.js/css/theme/serif.css" id="theme">
+
+    <!-- Code syntax highlighting -->
+    <link rel="stylesheet" href="bower_components/reveal.js/lib/css/zenburn.css">
+
+    <!-- Printing and PDF exports -->
+    <script>
+        var link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = window.location.search.match(/print-pdf/gi) ? 'css/print/pdf.css' : 'css/print/paper.css';
+        document.getElementsByTagName('head')[0].appendChild(link);
+    </script>
+
+    <!--[if lt IE 9]>
+    <script src="bower_components/reveal.js/lib/js/html5shiv.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+
+<div class="reveal">
+
+    <!-- Any section element inside of this container is displayed as a slide -->
+    <div class="slides">
+        <section>
+            <h1>React Advanced</h1>
+
+            <p>
+                <small>
+                    Created by <a href="https://github.com/dselkirk" target="_blank">Dennis Selkirk</a><br/>
+                </small>
+            </p>
+        </section>
+        <section>
+            <section>
+                <h1>CSS Модули</h1>
+            </section>
+            <section>
+                <h3>Без CSS модулей</h3>
+                <img src="img/css-modules.png"/>
+                <code class="fragment"><pre>
+.button { ... }
+.button--disabled { ... }
+.button--error { ... }
+.button--in-progress { ... }
+                </pre></code>
+                <code class="fragment"><pre>
+&lt;button class="button button--in-progress"&gt;Processing...&lt; /button&gt;
+                </pre></code>
+            </section>
+            <section>
+                <h3>CSS модули</h3>
+
+                <code class="fragment"><pre>
+/* components/submit-button.css */
+.normal { ... }
+.disabled { ... }
+.error { ... }
+.inProgress {  ... }
+                </pre></code>
+                <code class="fragment"><pre>
+/* components/submit-button.js */
+import styles from './submit-button.css';
+
+buttonElem.outerHTML = `&lt;button class=${styles.normal}>Submit&lt;/button&gt;`
+                </pre></code>
+                <code class="fragment"><pre>
+&lt;button class="components_submit_button__normal__abc5436"&gt;
+  Processing...
+&lt;/button&gt;
+                </pre></code>
+            </section>
+            <section>
+                <h3>Композиция</h3>
+                <code class="fragment"><pre>
+.common { /* font-sizes, padding, border-radius */ }
+.normal { composes: common; /* blue color, light blue background */ }
+.error {
+    composes: common; /* red color, light red background */
+    composes: primary margin-small from "../shared/colors.css";
+}
+                </pre></code>
+                <code class="fragment"><pre>
+styles: {
+  common: "components_submit_button__common__abc5436",
+  normal: "components_submit_button__common__abc5436 components_submit_button__normal__def6547",
+  error: "components_submit_button__common__abc5436 components_submit_button__error__1638bcd"
+}
+                </pre></code>
+                <code class="fragment"><pre>
+&lt;button class="shared_colors__primary__fca929
+               components_submit_button__common__abc5436
+               components_submit_button__normal__def6547"&gt;
+  Submit
+&lt;/button&gt;
+                </pre></code>
+            </section>
+            <section>
+                <h3>Магия</h3>
+                <img class="fragment" src="img/css-modules-magic.png"/>
+            </section>
+        </section>
+        <section>
+            <h3>Relay + GraphQL</h3>
+            <a href="https://facebook.github.io/relay/" target="_blank">Relay</a>
+            <a href="http://graphql-swapi.parseapp.com/" target="_blank">GraphQL</a>
+        </section>
+        <section>
+            <h3>React Router</h3>
+            <a href="https://github.com/reactjs/react-router-tutorial" target="_blank">Tutorial</a>
+        </section>
+        <section>
+            <section>
+                <h2>Flux/Redux</h2>
+            </section>
+            <section>
+                <ul>
+                    <li>Flux - только методология</li>
+                    <li><a href="https://github.com/kriasoft/react-starter-kit/issues/22">Реализаций много</a></li>
+                </ul>
+            </section>
+            <section>
+                <h2>Store</h2>
+                <ul>
+                    <li>Объединяет Reducers и Actions</li>
+                    <li>getState() - позволяет получить состояние приложения;</li>
+                    <li>dispatch(actions) - позволяет обновлять состояния, путем вызова действия;</li>
+                    <li>subscribe(listener) - регистрирует слушателей</li>
+                </ul>
+            </section>
+            <section>
+                <h2>Actions</h2>
+                <code class="fragment"><pre>
+{
+    type: 'ОБНОВИ_ПОЛЬЗОВАТЕЛЕЙ', // обязательно
+    payload: 2016
+}
+                </pre></code>
+                <code class="fragment"><pre>
+function getPhotos(year) {
+  return {
+    type: GET_PHOTOS,
+    payload: year
+  }
+}
+                </pre></code>
+            </section>
+            <section>
+                <h2>Reducers</h2>
+                <p>"Actions описывает факт, что что-то произошло, но не указывает, как состояние приложения должно измениться в ответ, это работа для Reducer'а"</p>
+                <code class="fragment"><pre>
+function page(state = initialState, action) {
+  switch (action.type) {
+    case GET_PHOTO_SUCCESS:
+      return Object.assign({}, state, { // всегда новый объект
+        photos: action.payload
+      })
+    default:
+      return state
+  }
+}
+                </pre></code>
+            </section>
+            <section>
+                <h2>Middleware</h2>
+                <code class="fragment"><pre>
+import { createStore, applyMiddleware } from 'redux';
+import thunk from 'redux-thunk';
+import rootReducer from './reducers/index';
+
+const store = createStore(
+  rootReducer,
+  applyMiddleware(thunk)
+);
+                </pre></code>
+                <code class="fragment"><pre>
+function makeASandwich(forPerson, secretSauce) {
+  return {
+    type: 'MAKE_SANDWICH',
+    forPerson,
+    secretSauce
+  };
+}
+function makeASandwichWithSecretSauce(forPerson) {
+  return function (dispatch) {
+    return fetchSecretSauce().then(
+      sauce => dispatch(makeASandwich(forPerson, sauce))
+    );
+  };
+}
+store.dispatch(makeASandwichWithSecretSauce('Me'));</pre></code>
+            </section>
+            <section>
+                <h2>Links</h2>
+                <ul>
+                    <li><a href="https://react.rocks/example/redux-state-history" target="_blank">History</a></li>
+                    <li><a href="https://react.rocks/example/redux-form" target="_blank">Form and DevTools</a></li>
+                </ul>
+            </section>
+        </section>
+        <section>
+            <h2>Как написать свой собственный Virtual DOM</h2>
+            <ul>
+                <li><a href="https://medium.com/@deathmood/how-to-write-your-own-virtual-dom-ee74acc13060#.g1ge93r97" target="_blank">Part 1</a></li>
+                <li><a href="https://medium.com/@deathmood/write-your-virtual-dom-2-props-events-a957608f5c76#.3kd275kz3" target="_blank">Part 2</a></li>
+            </ul>
+        </section>
+        <section style="text-align: left;">
+            <h1>КОНЕЦ</h1>
+
+            <p>
+                - <a href="https://github.com/dselkirk/react-presentation">Source</a>
+            </p>
+        </section>
+
+    </div>
+
+</div>
+
+<script src="bower_components/reveal.js/lib/js/head.min.js"></script>
+<script src="bower_components/reveal.js/js/reveal.js"></script>
+
+<script>
+
+    // Full list of configuration options available at:
+    // https://github.com/hakimel/reveal.js#configuration
+    Reveal.initialize({
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+
+        transition: 'concave', // none/fade/slide/convex/concave/zoom
+
+        // Optional reveal.js plugins
+        dependencies: [
+            {
+                src: 'bower_components/reveal.js/lib/js/classList.js', condition: function () {
+                return !document.body.classList;
+            }
+            },
+            {
+                src: 'bower_components/reveal.js/plugin/markdown/marked.js', condition: function () {
+                return !!document.querySelector('[data-markdown]');
+            }
+            },
+            {
+                src: 'bower_components/reveal.js/plugin/markdown/markdown.js', condition: function () {
+                return !!document.querySelector('[data-markdown]');
+            }
+            },
+            {
+                src: 'bower_components/reveal.js/plugin/highlight/highlight.js', async: true, condition: function () {
+                return !!document.querySelector('pre code');
+            }, callback: function () {
+                hljs.initHighlightingOnLoad();
+            }
+            },
+            {src: 'bower_components/reveal.js/plugin/zoom-js/zoom.js', async: true},
+            {src: 'bower_components/reveal.js/plugin/notes/notes.js', async: true}
+        ]
+    });
+
+</script>
+
+</body>
+</html>
